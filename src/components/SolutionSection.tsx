@@ -1,53 +1,69 @@
-import { motion, useInView } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 export function SolutionSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const textX = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [-100, 0, 0, -50]);
+  const imageX = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [100, 0, 0, 50]);
+  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.9, 1, 1, 0.95]);
+  const imageY = useTransform(scrollYProgress, [0.2, 0.5, 0.8], [0, -30, 0]);
 
   return (
-    <section ref={ref} className="py-32 px-6 bg-gradient-to-b from-transparent via-purple-50/20 to-transparent">
-      <div className="max-w-7xl mx-auto">
+    <section ref={ref} className="py-32 px-6 bg-gradient-to-b from-transparent via-purple-50/20 to-transparent min-h-screen flex items-center">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Text Content */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            style={{ opacity, x: textX, scale }}
             className="space-y-6"
           >
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl text-gray-900">
+            <motion.h2 
+              className="text-4xl sm:text-5xl lg:text-6xl text-gray-900"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.5 }}
+              transition={{ duration: 0.8 }}
+            >
               Your day,
               <br />
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 reimagined
               </span>
-            </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-gray-600 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               NOVA analyzes your schedule, habits, and emotional patterns to create a personalized plan that balances productivity with well-being.
-            </p>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            </motion.p>
+            <motion.p 
+              className="text-xl text-gray-600 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               It's not about cramming more in — it's about making space for what truly matters.
-            </p>
+            </motion.p>
           </motion.div>
 
           {/* App Mockup */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+            style={{ opacity, x: imageX, scale }}
             className="relative"
           >
             <motion.div
-              animate={{
-                y: [0, -20, 0],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+              style={{ y: imageY }}
               className="relative z-10"
             >
               <div className="relative rounded-[3rem] overflow-hidden shadow-2xl bg-white/50 backdrop-blur-sm border border-white/60 p-4">
@@ -60,7 +76,18 @@ export function SolutionSection() {
             </motion.div>
 
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 blur-3xl -z-10" />
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 blur-3xl -z-10"
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
           </motion.div>
         </div>
       </div>

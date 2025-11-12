@@ -1,4 +1,4 @@
-import { motion, useInView } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef, useState } from 'react';
 import { Calendar, Heart, Sparkles, Brain } from 'lucide-react';
 import { Card } from './ui/card';
@@ -36,12 +36,13 @@ function FeatureCard({ feature, index }: { feature: typeof features[0], index: n
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      initial={{ opacity: 0, y: 50, rotateX: -15 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      viewport={{ once: false, margin: "-100px", amount: 0.3 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      whileHover={{ y: -8, scale: 1.02 }}
     >
       <Card className="relative p-8 h-full bg-white/60 backdrop-blur-sm border-white/60 hover:bg-white/80 transition-all duration-300 overflow-hidden group">
         {/* Glow effect on hover */}
@@ -78,14 +79,25 @@ function FeatureCard({ feature, index }: { feature: typeof features[0], index: n
 
 export function FeaturesSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [100, 0, 0, -100]);
+  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.9, 1, 1, 0.95]);
 
   return (
-    <section ref={ref} className="py-32 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section ref={ref} className="py-32 px-6 min-h-screen flex items-center">
+      <motion.div 
+        className="max-w-7xl mx-auto w-full"
+        style={{ opacity, y, scale }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.5 }}
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
@@ -105,7 +117,7 @@ export function FeaturesSection() {
             <FeatureCard key={index} feature={feature} index={index} />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

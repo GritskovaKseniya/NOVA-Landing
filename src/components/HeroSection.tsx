@@ -1,19 +1,34 @@
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { Button } from './ui/button';
 import { Sparkles } from 'lucide-react';
+import { useRef } from 'react';
 
 export function HeroSection() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-white">
       {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-purple-100/30 to-pink-100/20" />
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-purple-100/50 to-pink-100/40"
+        style={{ opacity }}
+      />
       
       {/* Floating orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-200/30 to-purple-200/30 rounded-full blur-3xl"
+        className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-200/40 to-purple-200/40 rounded-full blur-3xl"
+        style={{ opacity, scale }}
         animate={{
           scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+          opacity: [0.4, 0.6, 0.4],
         }}
         transition={{
           duration: 8,
@@ -22,10 +37,11 @@ export function HeroSection() {
         }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/40 to-pink-200/40 rounded-full blur-3xl"
+        style={{ opacity, scale }}
         animate={{
           scale: [1, 1.3, 1],
-          opacity: [0.3, 0.5, 0.3],
+          opacity: [0.4, 0.6, 0.4],
         }}
         transition={{
           duration: 10,
@@ -36,7 +52,10 @@ export function HeroSection() {
       />
 
       {/* Content */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto">
+      <motion.div 
+        className="relative z-10 text-center max-w-4xl mx-auto"
+        style={{ opacity, y, scale }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -44,7 +63,7 @@ export function HeroSection() {
           className="mb-8"
         >
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/60 mb-8 shadow-sm"
             animate={{
               boxShadow: [
                 "0 0 20px rgba(139, 92, 246, 0.1)",
@@ -90,6 +109,10 @@ export function HeroSection() {
         >
           <Button 
             size="lg"
+            onClick={() => {
+              const demoSection = document.getElementById('demo-section');
+              demoSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Try the Demo
@@ -122,7 +145,7 @@ export function HeroSection() {
             />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
