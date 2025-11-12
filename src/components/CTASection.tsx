@@ -11,7 +11,7 @@ export function CTASection() {
     offset: ["start end", "end end"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.9], [0, 1, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.5], [0, 1, 1]);
   const scale = useTransform(scrollYProgress, [0, 0.3, 0.9], [0.9, 1, 1]);
   const y = useTransform(scrollYProgress, [0, 0.3], [100, 0]);
 
